@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport"
+			content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="css/style.css" />
+		<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+		<script type="text/javascript" src="config.js"></script>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
+
+			.check-model-list {
+				display: flex;
+				align-content: center;
+			}
+
+			.check-model-list p {
+				width: 200px;
+				cursor: pointer;
+				border: 1px solid #E95223;
+				padding: 10px;
+				text-align: center;
+				margin-bottom: 12px;
+			}
+
+			.check-model-list p:nth-child(1) {
+				border-right: 0;
+			}
+
+			.check-model-list p.active {
+				background: #E95223;
+				color: #fff;
+			}
+
+			.wrap_up {
+				padding: 10px;
+			}
+
+			h2 {
+				margin-bottom: 10px;
+			}
+
+			ul {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+			}
+
+			ul li {
+				background-color: #e9e9eb;
+			}
+
+			ul.red li.current {
+				background-color: #E95223;
+			}
+
+			ul.blue li.current {
+				background-color: #F2C811;
+			}
+
+			ul li {
+				list-style: none;
+				width: 40px;
+				height: 40px;
+				border-radius: 50%;
+				line-height: 40px;
+				text-align: center;
+				color: #fff;
+				margin-right: 1px;
+				margin-bottom: 6px;
+				font-weight: bold;
+			}
+
+			button {
+				display: block;
+				width: 150px;
+				height: 50px;
+				margin: 10px auto;
+				border: 0;
+				font-size: 20px;
+
+			}
+
+			#styleTopHight {
+				height: 18px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrap_up">
+			<h5 id="styleTopHight"></h5>
+			<div id="modeList" class="check-model-list"></div>
+			<div id="dynamic">
+				<h2>前区</h2>
+				<ul id="red" class="red"></ul>
+				<h2>后区</h2>
+				<ul id="blue" class="blue"></ul>
+			</div>
+		</div>
+
+
+		<!-- 		<div id="showLuck">
+			<div id="gua1" style="width:510px;;margin:0 auto;">
+				<div id="show" style="position:absolute;display:none;" align="center">
+				</div>
+				<img id="gua1_img" class="xiangpicls" src="img/gua_image.png" style="position: absolute;">
+				<canvas id="front" class="xiangpicls" style="position:absolute;no-repeat;z-index:1005;" />
+			</div>
+			<div class="keBottom">
+				<div class="resetbtn">再刮一次</div>
+			</div>
+
+		</div> -->
+
+		<div id="showLuck">
+			<div class="choice">
+              
+				<form name="config">
+					选择总张数
+					<select name="class"> </select>
+				</form>
+
+			</div>
+
+
+			<div class="student"><span id="name">0</span></div>
+			<div class="button-wrap">
+				<button class="default-button" type="button" onclick="clickButton()">开始选择</button>
+			</div>
+			<div class="copyright">
+				<span></span>
+			</div>
+			<script src="js/students.js"></script>
+			<script type="text/javascript" src="js/main.js"></script>
+
+		</div>
+
+		<script src="js/bd.js"></script>
+		<script>
+			document.getElementById('dynamic').style.display = "none";
+			// 红球从1 - 33 中选择 6 个
+			// 蓝球从1 - 16 中选择 1 个
+			let options = {
+					redLength: 33,
+					redLuck: 6,
+					blueLength: 16,
+					blueLuck: 1
+				},
+				options2 = {
+					redLength: 35,
+					redLuck: 5,
+					blueLength: 12,
+					blueLuck: 2
+				},
+				activeList = ['1', '2', '3'],
+				//首先展示
+				active = '3',
+				modeListShow = document.getElementById("modeList");
+
+			// 渲染模式
+			function dynamic(choice) {
+
+				if (choice == 3) {
+					document.getElementById('dynamic').style.display = "none";
+					document.getElementById('showLuck').style.display = "block";
+					console.log("隐藏执行")
+				}
+
+				if (choice == 1) {
+					document.getElementById('dynamic').style.display = "block";
+					document.getElementById('showLuck').style.display = "none";
+
+				}
+				if (choice == 2) {
+
+					document.getElementById('dynamic').style.display = "block";
+					document.getElementById('showLuck').style.display = "none";
+				}
+
+			}
+
+			const renderModel = (model) => {
+				//return `<p titleText="${model}" class="model-item  ${active === model && 'active'}">${model === '1' ? '双色球' : '大乐透'}</p>`
+
+				return `<p titleText="${model}" class="model-item 
+				 
+				 ${active === model && 'active'}"  > ${model ==='3'  ?  '😎/🙂' : model === '1' ? '2/4/日' : '1/3/6'} </p>` //条件选择器多重使用
+
+			}
+			const renderModelOption = () => {
+				modeListShow.innerHTML = activeList.reduce((a, b) => {
+					a += renderModel(b)
+
+					return a
+				}, '')
+			}
+			// 切换模式
+			modeListShow.addEventListener('click', (e) => {
+				let choice = e.target.getAttribute('titleText')
+				//if (model === active || model === null) return
+
+				console.log(choice)
+
+				//显示1
+				if (choice == 1) {
+					dynamic(choice);
+					active = choice
+					Array.from(document.getElementsByClassName('model-item')).map(item => {
+						item.classList.remove('active')
+					})
+					e.target.classList.add('active')
+
+					showLuckNum()
+				}
+				//显示2
+				if (choice == 2) {
+					active = choice
+					dynamic(choice);
+					Array.from(document.getElementsByClassName('model-item')).map(item => {
+						item.classList.remove('active')
+					})
+					e.target.classList.add('active')
+
+					showLuckNum()
+				}
+				//显示luck
+				if (choice == 3) {
+
+					active = choice
+					Array.from(document.getElementsByClassName('model-item')).map(item => {
+						item.classList.remove('active')
+					})
+					e.target.classList.add('active')
+					console.log("")
+					dynamic(choice);
+				}
+			})
+
+
+			// 获取随机函数
+			const getRandom = (min, max) => {
+				min = Math.ceil(min);
+				max = Math.floor(max);
+				return Math.floor(Math.random() * (max - min + 1)) + min;
+			}
+
+			// 获取幸运数组的操作
+			const getGoodLuckOption = (min, max, length) => {
+				return new Array(length).fill(1).reduce((prev, target) => {
+					let luckyNum = getRandom(min, max)
+					while (prev.includes(luckyNum)) luckyNum = getRandom(min, max)
+					prev.push(luckyNum)
+					return prev
+				}, [])
+			}
+
+			// 获取幸运数组
+			const getGoodLuck = () => {
+				let o = active === '1' ? options : options2
+				return {
+					redList: getGoodLuckOption(1, o.redLength, o.redLuck),
+					blueList: getGoodLuckOption(1, o.blueLength, o.blueLuck)
+				}
+			}
+
+			// 渲染号码
+			const renderLi = (val, current = false) => {
+				return `<li class="${current ? 'current' : ''}">${val}</li>`
+			}
+
+			// 渲染号码组的操作
+			const renderListOption = (luckList) => {
+				Object.keys(luckList).forEach(item => {
+					renderList(item.split('List')[0], luckList[item])
+				})
+			}
+
+			// 渲染号码组
+			const renderList = (nodeKey, content) => {
+				let o = active === '1' ? options : options2
+				document.getElementById(nodeKey).innerHTML = new Array(o[`${nodeKey}Length`]).fill(1).reduce((prev, target,
+					index) => {
+					return prev += renderLi(index + 1, content.includes(index + 1))
+				}, '')
+			}
+
+			const showLuckNum = function() {
+				renderListOption(getGoodLuck())
+			}
+
+			const init = () => {
+				showLuckNum()
+				renderModelOption()
+			}
+
+			init()
+		</script>
+
+		<script type="text/javascript">
+			//刮刮乐
+			const imgSrc = 'img/gua_image.png';
+			const height = 233;
+			//遮罩纵向宽度
+			const width = 410.4;
+			var tempKey;
+			var globalJsonKey;
+			var initNum;
+
+			function randomFun() {
+				if (awardsType === 1) {
+					var key = getKey(tempKey, globalkeys);
+					$("#show").empty().text(tempKey).show();
+				} else {
+					randomJsonKey();
+
+				}
+			}
+			//获取随机奖项
+			function randomJsonKey() {
+				//保证key数组只能初始化一次
+				if (globalJsonKey === undefined) {
+					initJSONKeys();
+				}
+				if (globalJsonKey.length <= 0) {
+					$("#show").empty().text('所有奖项已刮完').show();
+					alert("所有奖项已刮完");
+					return;
+				} else {
+					var key = getKey(tempKey, globalJsonKey);
+					var json = globalkeys2[key];
+					var awards = json.awards;
+					var num = json.num;
+					num = parseInt(num) - 1;
+					json.num = num;
+					if (num <= 0) {
+						//将数量小于0的删除
+						delOneArray(globalJsonKey, key);
+					}
+					$("#show").empty().text(tempKey + ":" + awards).show();
+				}
+
+			}
+			//初始化遍历json对象的key
+			function initJSONKeys() {
+				globalJsonKey = new Array();
+				$.each(globalkeys2, function(index, item) {
+					//console.log(index);
+					if (globalJsonKey.indexOf(index) === -1) {
+						globalJsonKey.push(index);
+					}
+
+				});
+			}
+			//删除数组中指定元素
+			function delOneArray(array, key) {
+				const idx = array.indexOf(key);
+				array.splice(idx, 1);
+			}
+
+			//避免和上一次的重复
+			function getKey(oldKey, keys) {
+
+				var key = keys[Math.floor((Math.random() * keys.length))];
+				if (keys.length > 1) {
+					if (oldKey === key) {
+						return getKey(key, keys);
+					}
+				}
+				tempKey = key;
+				return key;
+			}
+			$("img").load(function() {
+				var body_width = $(window).width();
+				var body_height = $(window).height();
+				//背景图参数
+				$("#gua1_img").width(0).height(250);
+
+				$("#gua1").css({
+					"margin-top": "20px"
+				});
+				$("#nImg").width(300).height(101);
+				$("#gua").width(width / 10).height(width / 10);
+				var gua1_img_width = $("#gua1_img").width();
+				$("#front").css({
+					"margin-top": 12 + "px",
+					"margin-left": 10 + "px",
+					"bolder-style": "solid",
+
+				});
+				$("#bg").width("100%").height($(window).height() - 1);
+				bodys(height, width);
+
+			});
+
+			function bodys(height, width) {
+				var img = new Image();
+				var canvas = document.querySelector('canvas');
+				canvas.style.position = 'absolute';
+				img.addEventListener('load', function(e) {
+					var ctx;
+					var w = width,
+						h = height;
+					var offsetX = canvas.offsetLeft,
+						offsetY = canvas.offsetTop;
+					var mousedown = false;
+
+					function layer(ctx) {
+						ctx.fillStyle = '#E9E9EB';
+						ctx.fillRect(0, 0, w, h);
+					}
+
+					function eventDown(e) {
+						e.preventDefault();
+						mousedown = true;
+					}
+
+					function eventUp(e) {
+						e.preventDefault();
+						mousedown = false;
+					}
+
+					function eventMove(e) {
+						e.preventDefault();
+						if (mousedown) {
+							if (e.changedTouches) {
+								e = e.changedTouches[e.changedTouches.length - 1];
+							}
+							var x = (e.clientX + document.body.scrollLeft || e.pageX) - offsetX || 0,
+								y = (e.clientY + document.body.scrollTop || e.pageY) - offsetY || 0;
+							with(ctx) {
+								beginPath()
+								arc(x, y, 50, 0, Math.PI * 2);
+								fill();
+							}
+						}
+					}
+					canvas.width = w;
+					canvas.height = h;
+					ctx = canvas.getContext('2d');
+					ctx.fillStyle = 'b9b9b9';
+
+					ctx.fillRect(0, 0, w, h);
+					layer(ctx);
+					ctx.globalCompositeOperation = 'destination-out';
+					canvas.addEventListener('touchstart', eventDown);
+					canvas.addEventListener('touchend', eventUp);
+					canvas.addEventListener('touchmove', eventMove);
+					canvas.addEventListener('mousedown', eventDown);
+					canvas.addEventListener('mouseup', eventUp);
+					canvas.addEventListener('mousemove', eventMove);
+					if (initNum === undefined) {
+						initNum = 1;
+						randomFun();
+					}
+
+				});
+
+				img.src = imgSrc;
+			}
+			$(".resetbtn").click(function() {
+				initNum = undefined;
+				bodys(height, width);
+			});
+
+			// 理性对待 仅供娱乐 请勿用于任何商业用途Powered by molifei &Thanks SmileFuture contact： nkgiycnup@mozmail.com
+		</script>
+
+	</body>
+</html>
